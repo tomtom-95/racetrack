@@ -1,7 +1,7 @@
 /* initialize the racetrack map 
 the racetrack is 1 for in boundary position and 0 for out of boundary position */
 
-#include "racetrack.h"
+#include "racetrack.hpp"
 
 
 void state_mask_init(state_mask_array &state_mask) {

@@ -1,4 +1,9 @@
-#include "racetrack.h"
+#include "racetrack.hpp"
+
+#include <iostream>
+#include <iomanip>
+#include <map>
+#include <random>
 
 
 void policy_init(policy_array &policy) {
@@ -43,24 +48,21 @@ struct racetrack_action
 generate_action(policy_array &policy,
                 struct racetrack_state prev_state)
 {
-  // policy[state][action] has a certain probability of happen, so I want to have a way to choose between
-  // the 9 possible actions when I am in a given state s.t. the probability in policy are followed
-
   typedef boost::multi_array<double, 2> prob_array;
-  typedef prob_array::index prob_index;
 
   prob_array prob = policy[prev_state.x_pos][prev_state.y_pos][prev_state.x_vel][prev_state.y_vel];
 
-  /*
-  for (prob_index i = 0; i < NUM_ACTION; ++i) {
-    for (prob_index j = 0; j < NUM_ACTION; ++j) {
-      std::cout << prob[i][j] << " ";
-    }
-    std::cout << std::endl;
-  }
-  */
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::discrete_distribution<> prob_dist({prob[0][0], prob[0][1], prob[0][2],
+                                          prob[1][0], prob[1][1], prob[1][2],
+                                          prob[2][0], prob[2][1], prob[2][2]});
 
-  struct racetrack_action act;
+  int act = prob_dist(gen);
+  int x_act = (act / NUM_ACTION) + MIN_ACTION;
+  int y_act = (act % NUM_ACTION) + MIN_ACTION;
 
-  return act;
+  struct racetrack_action action = {.x_act = x_act, .y_act = y_act};
+
+  return action;
 }

@@ -7,7 +7,7 @@
 #include "boost/multi_array.hpp"
 #include <cassert>
 
-#include "racetrack.h"
+#include "racetrack.hpp"
 #include "racetrack_mask.cpp"
 #include "racetrack_policy.cpp"
 
@@ -50,9 +50,9 @@ int main(void) {
   state_mask_array state_mask(boost::extents[MAX_X_POS+1][MAX_Y_POS+1]);
   state_mask_init(state_mask);
 
-  struct racetrack_state state = {.x_pos = 0, .y_pos = 0, .x_vel = 0, .y_vel = 0};
-  struct racetrack_action action = {.x_act = 0, .y_act = 0};
-  action = generate_action(policy, state);
+  struct racetrack_state initial_state = {.x_pos = 3, .y_pos = 0};
+  struct racetrack_action action = generate_action(policy, initial_state);
+  std::cout << action.x_act << "  " << action.y_act << std::endl;
 
 
   return 0;
