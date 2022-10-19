@@ -4,8 +4,10 @@
 CPP = g++
 CPPFLAGS = -Wall -std=c++20
 
+INCLUDE = -I/opt/homebrew/Cellar/boost/1.80.0/include
+
 racetrack:
-< ${CPP} ${CPPFLAGS} -o build/racetrack src/racetrack.cpp
+< ${CPP} ${CPPFLAGS} ${INCLUDE} -o build/racetrack src/racetrack.cpp
 
 run:
 < ./build/racetrack
