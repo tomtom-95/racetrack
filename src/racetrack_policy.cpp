@@ -1,8 +1,5 @@
 #include "racetrack.hpp"
 
-#include <iostream>
-#include <iomanip>
-#include <map>
 #include <random>
 
 
@@ -39,11 +36,6 @@ void policy_read(policy_array &policy) {
   }
 }
 
-// ora: devo costruire un metodo capace di decidere quale azione compiere (scegliere un numero compreso tra -1 ed 1)
-// basandosi sulle probabilità che trova nella sub-matrice [x_act][y_act]
-// I must pick the greedy action 
-// when I am in a certain state, pos and velocity, I must be able to generate a trajectory that follows the current policy
-// that end up in one of the terminal states
 struct racetrack_action
 generate_action(policy_array &policy,
                 struct racetrack_state prev_state)

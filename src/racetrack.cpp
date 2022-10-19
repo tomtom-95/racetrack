@@ -1,8 +1,4 @@
 #include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <random>
-#include <array>
 
 #include "boost/multi_array.hpp"
 #include <cassert>
@@ -10,34 +6,7 @@
 #include "racetrack.hpp"
 #include "racetrack_mask.cpp"
 #include "racetrack_policy.cpp"
-
-
-struct racetrack_state 
-move_car(struct racetrack_state current, 
-         int x_action, 
-         int y_action, 
-         int state_mask[MAX_X_POS + 1][MAX_Y_POS + 1]) 
-{
-  current.x_vel += x_action;
-  current.y_vel += y_action;
-  current.x_pos += current.x_vel;
-  current.y_pos += current.y_vel;
-
-  if (26 >= current.y_pos && current.y_pos <= MAX_Y_POS) {
-    if (current.x_pos >= MAX_X_POS) {
-      return current;
-    }
-  }
-
-  if (current.x_pos < 0 || current.y_pos < 0 || current.x_pos > MAX_X_POS || current.y_pos > MAX_Y_POS || state_mask[current.x_pos][current.y_pos] == 0) {
-    current.x_vel = 0;
-    current.y_vel = 0;
-    current.x_pos = rand() % 6 + 3;
-    current.y_pos = 0;
-  }
-
-  return current;
-}
+#include "racetrack_state.cpp"
 
 
 int main(void) {
@@ -52,8 +21,12 @@ int main(void) {
 
   struct racetrack_state initial_state = {.x_pos = 3, .y_pos = 0};
   struct racetrack_action action = generate_action(policy, initial_state);
-  std::cout << action.x_act << "  " << action.y_act << std::endl;
 
+  struct racetrack_state next_state = state_transition(initial_state, action, state_mask);
+  std::cout << next_state.x_pos << " " << next_state.y_pos << " " << next_state.x_vel << " " << next_state.y_vel << std::endl;
+  action = generate_action(policy, next_state);
+  next_state = state_transition(next_state, action, state_mask);
+  std::cout << next_state.x_pos << " " << next_state.y_pos << " " << next_state.x_vel << " " << next_state.y_vel << std::endl;
 
   return 0;
 }
