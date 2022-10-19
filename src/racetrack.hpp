@@ -1,5 +1,5 @@
-#ifndef RACETRACK_H
-#define RACETRACK_H
+#ifndef RACETRACK_HPP
+#define RACETRACK_HPP
 
 typedef boost::multi_array<double, 6> policy_array;
 typedef boost::multi_array<int, 2> state_mask_array;
@@ -32,4 +32,4 @@ struct racetrack_state_reward {
   struct racetrack_action action;
 };
 
-#endif // RACETRACK_H
+#endif // RACETRACK_HPP
