@@ -1,10 +1,11 @@
 #ifndef RACETRACK_POLICY_CPP
 #define RACETRACK_POLICY_CPP
 
+#include <random>
+#include <vector>
+
 #include "racetrack.hpp"
 #include "racetrack_state.cpp"
-
-#include <random>
 
 
 void policy_init(policy_array &policy) {
@@ -40,9 +41,26 @@ void policy_read(policy_array &policy) {
   }
 }
 
-void action_read(struct racetrack_action &action) {
-  std::cout << action.x_act << " " << action.y_act;
+
+void policy_update(policy_array &policy,
+                   struct racetrack_state &state,
+                   struct racetrack_action &max_action)
+{
+  // typedef boost::multi_array<double, 2> sub_array;
+
+  // sub_array::index -> int
+  for (int i = 0; i < NUM_ACTION; ++i) {
+    for (int j = 0; j < NUM_ACTION; ++j) {
+      if (i == max_action.x_act + 1 && j == max_action.y_act + 1) {
+        policy[state.x_pos][state.y_pos][state.x_vel][state.y_vel][i][j] = 1.0 - eps + eps / (NUM_ACTION * NUM_ACTION);
+      }
+      else {
+        policy[state.x_pos][state.y_pos][state.x_vel][state.y_vel][i][j] = eps / (NUM_ACTION * NUM_ACTION);
+      }
+    }
+  }
 }
+
 
 struct racetrack_action
 generate_action(policy_array &policy,
@@ -64,32 +82,100 @@ generate_action(policy_array &policy,
 
   struct racetrack_action action = {.x_act = x_act, .y_act = y_act};
 
+
   return action;
 }
 
 
-void generate_episode(policy_array &policy,
-                      state_mask_array &state_mask) 
+episode_type
+generate_episode(policy_array &policy,
+                 state_mask_array &state_mask) 
 {
-  struct racetrack_state state = pick_start();  
+  episode_type episode = {};
 
-  int cnt = 0;
+  struct racetrack_state state = pick_start();  
+  struct racetrack_action action = generate_action(policy,
+                                                   state);
+
+  struct racetrack_state_action state_action = {
+    .state = state,
+    .action = action
+  };
+
+  episode.push_back(state_action);
+
   while (!is_terminal(state)) {
-    cnt++;
-    struct racetrack_action action = generate_action(policy,
-                                                     state);
+    action = generate_action(policy,
+                             state);
+
     state = state_transition(state,
                              action,
                              state_mask);
 
-    state_read(state);
-    std::cout << '\n';
-    action_read(action);
-    std::cout << '\n';
+    state_action = {
+      .state = state,
+      .action = action
+    };
+
+    episode.push_back(state_action);
   }
 
-  std::cout << "terminal reached!" << std::endl;
-  std::cout << cnt << std::endl;
+
+  return episode;
 }
+
+bool is_first_visit(episode_type &episode,
+                    episode_type::iterator &it)
+{
+  for (episode_type::iterator el = episode.begin(); el != it; ++el) {
+    if (*el == *it) {
+      return false;
+    }
+  }
+  return true;
+}
+
+double vector_avg(std::vector<double> &vec) {
+  if (vec.begin() == vec.end()) {
+    return 0;
+  }
+  else {
+    double avg = 0;
+
+    for (std::vector<double>::iterator beg = vec.begin(); beg != vec.end(); ++beg) {
+      avg += *beg; 
+    }
+
+    return avg / vec.size();
+  }
+}
+
+struct racetrack_action
+argmax_Q(Q_type &Q,
+         struct racetrack_state &state)
+{
+  typedef boost::multi_array<double, 2> sub_array;
+
+  sub_array
+  Q_sub_mat = Q[state.x_pos][state.y_pos][state.x_vel][state.y_vel];
+
+  double max_value = 0;
+  struct racetrack_action max_action = {.x_act = 0, .y_act = 0};
+  
+  // sub_array::index -> int
+  for (int i = 0; i < NUM_ACTION; ++i) {
+    for (int j = 0; j < NUM_ACTION; ++j) {
+      double value = Q_sub_mat[i][j];
+      if (value > max_value) {
+        max_value = value;
+        max_action = {.x_act = i - 1, .y_act = j - 1};
+      }
+    }
+  }
+
+
+  return max_action;
+}
+
 
 #endif // RACETRACK_POLICY_CPP

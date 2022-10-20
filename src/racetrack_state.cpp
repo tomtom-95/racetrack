@@ -72,8 +72,49 @@ bool is_terminal(struct racetrack_state &state) {
   return (state.y_pos >= 26 && state.x_pos >= MAX_X_POS) ? true : false;
 }
 
-void state_read (struct racetrack_state &state) {
+void state_read(struct racetrack_state &state) {
   std::cout << state.x_pos << " " << state.y_pos << " " << state.x_vel << " " << state.y_vel;
 }
+
+
+void action_read(struct racetrack_action &action) {
+  std::cout << action.x_act << " " << action.y_act;
+} 
+
+
+void state_action_read(struct racetrack_state_action &state_action) {
+  state_read(state_action.state);
+  std::cout << '\n';
+  action_read(state_action.action);
+}
+
+
+bool operator==(struct racetrack_state &lhs, struct racetrack_state &rhs) {
+  return (lhs.x_pos == rhs.x_pos &&
+          lhs.y_pos == rhs.y_pos &&
+          lhs.x_vel == rhs.x_vel &&
+          lhs.y_vel == rhs.y_vel);
+}
+
+bool operator==(struct racetrack_action &lhs, struct racetrack_action &rhs) {
+  return (lhs.x_act == rhs.x_act &&
+          lhs.y_act == rhs.y_act);
+}
+
+bool operator==(struct racetrack_state_action &lhs, struct racetrack_state_action &rhs) {
+  return (lhs.state == rhs.state && 
+          lhs.action == rhs.action);
+}
+
+// action and velocity conversion to the indices in the arrays
+int action_to_index(int action) {
+  return action + 1;
+}
+
+int index_to_action(int index) {
+  return index - 1;
+}
+
+
 
 #endif // RACETRACK_STATE_CPP

@@ -1,8 +1,9 @@
 #ifndef RACETRACK_HPP
 #define RACETRACK_HPP
 
-typedef boost::multi_array<double, 6> policy_array;
-typedef boost::multi_array<int, 2> state_mask_array;
+#include "boost/multi_array.hpp"
+#include <vector>
+
 
 const int MAX_X_POS = 16;
 const int MAX_Y_POS = 31;
@@ -27,9 +28,15 @@ struct racetrack_action {
   int y_act;
 };
 
-struct racetrack_state_reward {
+struct racetrack_state_action {
   struct racetrack_state state;
   struct racetrack_action action;
 };
+
+typedef boost::multi_array<double, 6> policy_array;
+typedef boost::multi_array<double, 6> Q_type;
+typedef boost::multi_array<std::vector<double>, 6> returns_type;
+typedef boost::multi_array<int, 2> state_mask_array;
+typedef std::vector<struct racetrack_state_action> episode_type;
 
 #endif // RACETRACK_HPP
