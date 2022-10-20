@@ -1,3 +1,6 @@
+#ifndef RACETRACK_MASK_CPP
+#define RACETRACK_MASK_CPP
+
 /* initialize the racetrack map 
 the racetrack is 1 for in boundary position and 0 for out of boundary position */
 
@@ -63,3 +66,5 @@ void state_mask_read(state_mask_array &state_mask) {
     std::cout << std::endl;
   }
 }
+
+#endif // RACETRACK_MASK

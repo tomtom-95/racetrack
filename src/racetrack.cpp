@@ -19,14 +19,8 @@ int main(void) {
   state_mask_array state_mask(boost::extents[MAX_X_POS+1][MAX_Y_POS+1]);
   state_mask_init(state_mask);
 
-  struct racetrack_state initial_state = {.x_pos = 3, .y_pos = 0};
-  struct racetrack_action action = generate_action(policy, initial_state);
+  generate_episode(policy, state_mask);
 
-  struct racetrack_state next_state = state_transition(initial_state, action, state_mask);
-  std::cout << next_state.x_pos << " " << next_state.y_pos << " " << next_state.x_vel << " " << next_state.y_vel << std::endl;
-  action = generate_action(policy, next_state);
-  next_state = state_transition(next_state, action, state_mask);
-  std::cout << next_state.x_pos << " " << next_state.y_pos << " " << next_state.x_vel << " " << next_state.y_vel << std::endl;
 
   return 0;
 }

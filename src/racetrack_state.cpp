@@ -1,3 +1,6 @@
+#ifndef RACETRACK_STATE_CPP
+#define RACETRACK_STATE_CPP
+
 #include <cstdlib>
 #include <time.h>
 
@@ -5,7 +8,7 @@
 
 
 struct racetrack_state
-return_to_start()
+pick_start()
 {
   srand(time(0));
   
@@ -34,26 +37,43 @@ state_transition(struct racetrack_state &current_state,
     .y_vel = current_state.y_vel + action.y_act
   };
 
-  if (next_state.x_vel > MAX_VEL) {
-    next_state.x_vel = MAX_VEL;
+  /* when the car is in a not allowed state it jumps back to the start */
+  if (next_state.x_vel > MAX_VEL || next_state.y_vel > MAX_VEL) {
+    return pick_start();
   }
 
-  if (next_state.y_vel > MAX_VEL) {
-    next_state.y_vel = MAX_VEL;
+  if (next_state.x_vel < 0 || next_state.y_vel < 0) {
+    return pick_start();
+  }
+
+  if (next_state.x_vel == 0 && next_state.y_vel == 0) {
+    return pick_start();
   }
 
   if (next_state.x_pos < 0 || next_state.y_pos < 0) {
-    next_state = return_to_start();
+    return pick_start();
   }
 
   if (next_state.y_pos > MAX_Y_POS) {
-    next_state = return_to_start();
+    return pick_start();
   }
 
-  if (state_mask[next_state.x_pos][next_state.y_pos] == 0) {
-    next_state = return_to_start();
+  if (next_state.y_pos < 26) {
+    if (state_mask[next_state.x_pos][next_state.y_pos] == 0) {
+      return pick_start();
+    }
   }
 
 
   return next_state;
 }
+
+bool is_terminal(struct racetrack_state &state) {
+  return (state.y_pos >= 26 && state.x_pos >= MAX_X_POS) ? true : false;
+}
+
+void state_read (struct racetrack_state &state) {
+  std::cout << state.x_pos << " " << state.y_pos << " " << state.x_vel << " " << state.y_vel;
+}
+
+#endif // RACETRACK_STATE_CPP

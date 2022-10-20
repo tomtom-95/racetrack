@@ -1,4 +1,8 @@
+#ifndef RACETRACK_POLICY_CPP
+#define RACETRACK_POLICY_CPP
+
 #include "racetrack.hpp"
+#include "racetrack_state.cpp"
 
 #include <random>
 
@@ -36,6 +40,10 @@ void policy_read(policy_array &policy) {
   }
 }
 
+void action_read(struct racetrack_action &action) {
+  std::cout << action.x_act << " " << action.y_act;
+}
+
 struct racetrack_action
 generate_action(policy_array &policy,
                 struct racetrack_state prev_state)
@@ -58,3 +66,30 @@ generate_action(policy_array &policy,
 
   return action;
 }
+
+
+void generate_episode(policy_array &policy,
+                      state_mask_array &state_mask) 
+{
+  struct racetrack_state state = pick_start();  
+
+  int cnt = 0;
+  while (!is_terminal(state)) {
+    cnt++;
+    struct racetrack_action action = generate_action(policy,
+                                                     state);
+    state = state_transition(state,
+                             action,
+                             state_mask);
+
+    state_read(state);
+    std::cout << '\n';
+    action_read(action);
+    std::cout << '\n';
+  }
+
+  std::cout << "terminal reached!" << std::endl;
+  std::cout << cnt << std::endl;
+}
+
+#endif // RACETRACK_POLICY_CPP
